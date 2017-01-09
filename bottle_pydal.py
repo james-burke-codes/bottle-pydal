@@ -20,7 +20,7 @@ class DALPlugin(object):
     name = 'dal'
 
     def __init__(self,
-                 daluri='sqlite://storage.sqlite',
+                 uri='sqlite://storage.sqlite',
                  autocommit=False,
                  pool_size=0, folder=None,
                  db_codec='UTF-8', check_reserved=None,
@@ -35,7 +35,7 @@ class DALPlugin(object):
                  table_hash=None,
                  keyword='db'):
 
-        self.daluri = daluri
+        self.uri = uri
         self.autocommit = autocommit
         self.pool_size = pool_size
         self.folder = folder
@@ -77,13 +77,13 @@ class DALPlugin(object):
         # Test if the original callback accepts a 'db' keyword.
         # Ignore it if it does not need a database handle.
         args = inspect.signature(context['callback'])
-        if keyword not in str(args):
+        if self.keyword not in str(args):
             return callback
 
         def wrapper(*args, **kwargs):
 
             # Connect to the database
-            db = DAL(daluri,
+            db = DAL(self.uri,
                  pool_size=self.pool_size,
                  folder=self.folder,
                  db_codec=self.db_codec,
@@ -109,15 +109,15 @@ class DALPlugin(object):
                  table_hash=self.table_hash
                  )
 
-            if define_tables:  # tables definitions
-                define_tables(db)
+            if self.define_tables:  # tables definitions
+                self.define_tables(db)
 
             # Add the connection handle as a keyword argument.
-            kwargs[keyword] = db
+            kwargs[self.keyword] = db
 
             try:
                 rv = callback(*args, **kwargs)
-                if autocommit: db.commit()
+                if self.autocommit: db.commit()
             except Exception as e:
                 db.rollback()
                 raise HTTPError(500, "Database Error", e)
