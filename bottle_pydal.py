@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 
 __author__ = "James P Burke"
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 __license__ = 'LGPL v3.0'
 
 ### CUT HERE (see setup.py)
@@ -63,6 +63,7 @@ class DALPlugin(object):
 
         self.define_tables = define_tables
         self.keyword = keyword
+        self.db = None
 
     def setup(self, app):
         ''' Make sure that other installed plugins don't affect the same
@@ -72,6 +73,11 @@ class DALPlugin(object):
             if other.keyword == self.keyword:
                 raise PluginError("Found another DAL plugin with "\
                                   "conflicting settings (non-unique keyword).")
+
+        # Connect to the database
+        if self.pool_size:
+            self._connect()
+        
 
     def apply(self, callback, context):
         # Test if the original callback accepts a 'db' keyword.
@@ -83,43 +89,17 @@ class DALPlugin(object):
         def wrapper(*args, **kwargs):
 
             # Connect to the database
-            db = DAL(self.uri,
-                 pool_size=self.pool_size,
-                 folder=self.folder,
-                 db_codec=self.db_codec,
-                 check_reserved=self.check_reserved,
-                 migrate=self.migrate,
-                 fake_migrate=self.fake_migrate,
-                 migrate_enabled=self.migrate_enabled,
-                 fake_migrate_all=self.fake_migrate_all,
-                 decode_credentials=self.decode_credentials,
-                 driver_args=self.driver_args,
-                 adapter_args=self.adapter_args,
-                 attempts=self.attempts,
-                 auto_import=self.auto_import,
-                 bigint_id=self.bigint_id,
-                 debug=self.debug,
-                 lazy_tables=self.lazy_tables,
-                 db_uid=self.db_uid,
-                 do_connect=self.do_connect,
-                 after_connection=self.after_connection,
-                 tables=self.tables,
-                 ignore_field_case=self.ignore_field_case,
-                 entity_quoting=self.entity_quoting,
-                 table_hash=self.table_hash
-                 )
-
-            if self.define_tables:  # tables definitions
-                self.define_tables(db)
+            if not self.pool_size:
+                self._connect()
 
             # Add the connection handle as a keyword argument.
-            kwargs[self.keyword] = db
+            kwargs[self.keyword] = self.db
 
             try:
                 rv = callback(*args, **kwargs)
-                if self.autocommit: db.commit()
+                if self.autocommit: self.db.commit()
             except Exception as e:
-                db.rollback()
+                self.db.rollback()
                 raise HTTPError(500, "Database Error", e)
 
             return rv
@@ -127,5 +107,34 @@ class DALPlugin(object):
         # Replace the route callback with the wrapped one.
         return wrapper
 
+    def _connect(self):
+        self.db = DAL(self.uri,
+             pool_size=self.pool_size,
+             folder=self.folder,
+             db_codec=self.db_codec,
+             check_reserved=self.check_reserved,
+             migrate=self.migrate,
+             fake_migrate=self.fake_migrate,
+             migrate_enabled=self.migrate_enabled,
+             fake_migrate_all=self.fake_migrate_all,
+             decode_credentials=self.decode_credentials,
+             driver_args=self.driver_args,
+             adapter_args=self.adapter_args,
+             attempts=self.attempts,
+             auto_import=self.auto_import,
+             bigint_id=self.bigint_id,
+             debug=self.debug,
+             lazy_tables=self.lazy_tables,
+             db_uid=self.db_uid,
+             do_connect=self.do_connect,
+             after_connection=self.after_connection,
+             tables=self.tables,
+             ignore_field_case=self.ignore_field_case,
+             entity_quoting=self.entity_quoting,
+             table_hash=self.table_hash
+             )
+
+        if self.define_tables:  # tables definitions
+            self.define_tables(self.db)
 
 Plugin = DALPlugin
