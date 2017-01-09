@@ -15,7 +15,7 @@ setup(
         description = 'PyDAL for bottle.',
         author = 'James P Burke',
         author_email = 'james.burke1203@gmail.com',
-        license = 'Artistic',
+        license = 'LGPL v3.0',
         py_modules = [ 'bottle_pydal' ],
         url = 'https://bitbucket.org/devries/bottle-session',
         install_requires = [
@@ -26,7 +26,7 @@ setup(
             'Development Status :: 4 - Beta',
             'Framework :: Bottle',
             'Intended Audience :: Developers',
-            'License :: OSI Approved :: Artistic License',
+            'License :: OSI Approved :: LGPL v3.0',
             'Operating System :: OS Independent',
             'Programming Language :: Python',
             'Topic :: Internet :: WWW/HTTP :: WSGI :: Application'
