@@ -108,8 +108,8 @@ class DALPlugin(object):
 
         # Test if the original callback accepts a 'db' keyword.
         # Ignore it if it does not need a database handle.
-        args = inspect.getargspec(context['callback'])[0]
-        if keyword not in args:
+        args = inspect.signature(context['callback'])
+        if keyword not in str(args):
             return callback
 
         def wrapper(*args, **kwargs):
