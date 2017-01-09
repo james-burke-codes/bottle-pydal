@@ -14,10 +14,10 @@ from bottle import HTTPError
 class DALPlugin(object):
     ''' This plugin passes an DAL database handle to route callbacks
     that accept a `db` keyword argument. If a callback does not expect
-    such a parameter, no connection is made. You can override the database
-    settings on a per-route basis. See DAL on www.web2py.com'''
+    such a parameter, no connection is made.'''
 
-    name = 'dal'
+    name = 'pydal'
+    api = 2
 
     def __init__(self,
                  uri='sqlite://storage.sqlite',
@@ -82,8 +82,10 @@ class DALPlugin(object):
     def apply(self, callback, context):
         # Test if the original callback accepts a 'db' keyword.
         # Ignore it if it does not need a database handle.
-        args = inspect.signature(context['callback'])
-        if self.keyword not in str(args):
+        conf = context.config.get('db') or {}
+        args = context.get_callback_args()
+
+        if self.keyword not in args:
             return callback
 
         def wrapper(*args, **kwargs):
