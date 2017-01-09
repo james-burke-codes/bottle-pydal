@@ -1,6 +1,9 @@
 Bottle pyDAL
 ---------------------------------------------------------------------------
 
+Derived from Martin Mulone's initial version:
+https://pypi.python.org/pypi/bottle-web2pydal/
+
 Bottle-DAL is a plugin that integrates Web2py DAL Database Abstraction Layer
 with your Bottle application. It automatically connects to a database at the
 beginning of a request, passes the database handle to the route callback and
