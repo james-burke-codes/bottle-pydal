@@ -4,17 +4,30 @@ Bottle pyDAL
 Derived from Martin Mulone's initial version:
 https://pypi.python.org/pypi/bottle-web2pydal/
 
+# Install
+
+
+`pip install bottle_pydal`
+
+
+# About
+
 Bottle-DAL is a plugin that integrates Web2py DAL Database Abstraction Layer
 with your Bottle application. It automatically connects to a database at the
 beginning of a request, passes the database handle to the route callback and
 closes the connection afterwards.
 
-To automatically detect routes that need a database connection, the plugin
-searches for route callbacks that require a `db` keyword argument
-(configurable) and skips routes that do not. This removes any overhead for
-routes that don't need a database connection.
+Note: setting `pool_size=1` or greater will give you significant performance
+      gains for DBMSs that support connection pooling.
 
-Usage Example::
+More information about web2py's pyDAL can be found here:
+http://www.web2py.com/books/default/chapter/29/06/the-database-abstraction-layer
+
+And the pyDAL repository is here:
+https://github.com/web2py/pydal
+
+
+# Example
 
 from bottle import route, view, run, debug, install
 from bottle_dal import DALPlugin, Field

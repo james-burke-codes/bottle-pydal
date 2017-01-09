@@ -12,7 +12,7 @@ del modcontents
 setup(
         name = 'bottle-pydal',
         version = version,
-        description = 'PyDAL for bottle.',
+        description = 'PyDAL for bottle - See Github for more info',
         author = 'James P Burke',
         author_email = 'james.burke1203@gmail.com',
         license = 'LGPL v3.0',
