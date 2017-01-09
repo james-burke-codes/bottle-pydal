@@ -74,38 +74,6 @@ class DALPlugin(object):
                                   "conflicting settings (non-unique keyword).")
 
     def apply(self, callback, context):
-        # Override global configuration with route-specific values.
-        conf = context['config'].get('dal') or {}
-        daluri = conf.get('daluri', self.daluri)
-        autocommit = conf.get('autocommit', self.autocommit)
-        pool_size = conf.get('pool_size', self.pool_size)
-        folder = conf.get('folder', self.folder)
-        db_codec = conf.get('db_codec', self.db_codec)
-        check_reserved = conf.get('check_reserved', self.check_reserved)
-        migrate = conf.get('migrate', self.migrate)
-        fake_migrate = conf.get('fake_migrate', self.fake_migrate)
-        migrate_enabled = conf.get('migrate_enabled', self.migrate_enabled)
-        fake_migrate_all = conf.get('fake_migrate_all', self.fake_migrate_all)
-        decode_credentials = conf.get('decode_credentials',
-                                                    self.decode_credentials)
-        driver_args = conf.get('driver_args', self.driver_args)
-        adapter_args = conf.get('adapter_args', self.adapter_args)
-        attempts = conf.get('attempts', self.attempts)
-        auto_import = conf.get('auto_import', self.auto_import)
-        bigint_id = conf.get('bigint_id', self.bigint_id)
-        debug = conf.get('debug', self.debug)
-        lazy_tables = conf.get('lazy_tables', self.lazy_tables)
-        db_uid = conf.get('db_uid', self.db_uid)
-        do_connect = conf.get('do_connect', self.do_connect)
-        after_connection = conf.get('after_connection', self.after_connection)
-        tables = conf.get('tables', self.tables)
-        ignore_field_case = conf.get('ignore_field_case', self.ignore_field_case)
-        entity_quoting = conf.get('entity_quoting', self.entity_quoting)
-        table_hash = conf.get('table_hash', self.table_hash)
-
-        define_tables = conf.get('define_tables', self.define_tables)
-        keyword = conf.get('keyword', self.keyword)
-
         # Test if the original callback accepts a 'db' keyword.
         # Ignore it if it does not need a database handle.
         args = inspect.signature(context['callback'])
@@ -116,19 +84,30 @@ class DALPlugin(object):
 
             # Connect to the database
             db = DAL(daluri,
-                 pool_size=pool_size,
-                 folder=folder,
-                 db_codec=db_codec,
-                 check_reserved=check_reserved,
-                 migrate=migrate,
-                 fake_migrate=fake_migrate,
-                 migrate_enabled=migrate_enabled,
-                 fake_migrate_all=fake_migrate_all,
-                 decode_credentials=decode_credentials,
-                 driver_args=driver_args,
-                 adapter_args=adapter_args,
-                 attempts=attempts,
-                 auto_import=auto_import)
+                 pool_size=self.pool_size,
+                 folder=self.folder,
+                 db_codec=self.db_codec,
+                 check_reserved=self.check_reserved,
+                 migrate=self.migrate,
+                 fake_migrate=self.fake_migrate,
+                 migrate_enabled=self.migrate_enabled,
+                 fake_migrate_all=self.fake_migrate_all,
+                 decode_credentials=self.decode_credentials,
+                 driver_args=self.driver_args,
+                 adapter_args=self.adapter_args,
+                 attempts=self.attempts,
+                 auto_import=self.auto_import,
+                 bigint_id=self.bigint_id,
+                 debug=self.debug,
+                 lazy_tables=self.lazy_tables,
+                 db_uid=self.db_uid,
+                 do_connect=self.do_connect,
+                 after_connection=self.after_connection,
+                 tables=self.tables,
+                 ignore_field_case=self.ignore_field_case,
+                 entity_quoting=self.entity_quoting,
+                 table_hash=self.table_hash
+                 )
 
             if define_tables:  # tables definitions
                 define_tables(db)
