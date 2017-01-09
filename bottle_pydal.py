@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 
 __author__ = "James P Burke"
-__version__ = '0.2.2'
+__version__ = '0.2.3'
 __license__ = 'LGPL v3.0'
 
 ### CUT HERE (see setup.py)
