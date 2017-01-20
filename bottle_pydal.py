@@ -1,15 +1,17 @@
 #-*- coding: utf-8 -*-
 
 __author__ = "James P Burke"
-__version__ = '0.2.3'
+__version__ = '0.2.4'
 __license__ = 'LGPL v3.0'
 
 ### CUT HERE (see setup.py)
 
-from pydal import DAL, Field
 import inspect
+import logging
+from pydal import DAL, Field
 from bottle import HTTPError
 
+logger = logging.getLogger(__name__)
 
 class DALPlugin(object):
     ''' This plugin passes an DAL database handle to route callbacks
@@ -24,8 +26,8 @@ class DALPlugin(object):
                  autocommit=False,
                  pool_size=0, folder=None,
                  db_codec='UTF-8', check_reserved=None,
-                 migrate=True, fake_migrate=False,
-                 migrate_enabled=True, fake_migrate_all=False,
+                 migrate=False, fake_migrate=False,
+                 migrate_enabled=False, fake_migrate_all=False,
                  decode_credentials=False, driver_args=None,
                  adapter_args=None, attempts=5, auto_import=False,
                  define_tables=None, bigint_id=False, debug=False,
@@ -101,6 +103,7 @@ class DALPlugin(object):
                 rv = callback(*args, **kwargs)
                 if self.autocommit: self.db.commit()
             except Exception as e:
+                logger.error(e, exc_info=True)
                 self.db.rollback()
                 raise HTTPError(500, "Database Error", e)
 
